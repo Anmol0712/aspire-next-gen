@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AspireNextGen</title>
+    <link rel="icon" href="/static/logo.jpg" type="image/jpeg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* CSS Variables for theming */
+        :root {
+            /* Dark Mode */
+            --bg-color-dark: linear-gradient(135deg, #161d2e 0%, #1e293b 100%);
+            --text-color-dark: #E0E0E0;
+            --card-bg-dark: rgba(255, 255, 255, 0.021);
+            --card-border-dark: rgba(255, 255, 255, 0.041);
+            --chip-bg-dark: rgba(255, 255, 255, 0.05);
+            --chip-border-dark: rgba(255, 255, 255, 0.1);
+            --sidebar-hover-dark: rgba(99, 102, 241, 0.15);
+            --sidebar-active-dark: rgba(139, 92, 246, 0.15);
+            --glowing-title-dark: 0 0 8px currentColor;
+            --placeholder-color-dark: #A0A0A0;
+            --input-bg-dark: rgba(255, 255, 255, 0.05);
+            --input-border-dark: rgba(255, 255, 255, 0.1);
+            --quick-action-icon-color: #E0E0E0;
+            --recommended-course-icon-dark: #E0E0E0;
+        }
+        
+        [data-theme="light"] {
+            /* Light Mode */
+            --bg-color-light: #eef2f5;
+            --text-color-light: #1A202C;
+            --card-bg-light: rgba(255, 255, 255, 0.8);
+            --card-border-light: rgba(220, 220, 220, 0.5);
+            --chip-bg-light: rgba(0, 0, 0, 0.05);
+            --chip-border-light: rgba(0, 0, 0, 0.1);
+            --sidebar-hover-light: rgba(76, 81, 191, 0.15);
+            --sidebar-active-light: rgba(76, 81, 191, 0.2);
+            --glowing-title-light: none;
+            --placeholder-color-light: #4B5563;
+            --input-bg-light: rgba(255, 255, 255, 0.9);
+            --input-border-light: rgba(0, 0, 0, 0.1);
+            --quick-action-icon-color: #1A202C;
+            --recommended-course-icon-light: #1A202C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        /* Default (Dark Mode) styles */
+        body {
+            background: var(--bg-color-dark);
+            color: var(--text-color-dark);
+        }
+        .glassmorphism {
+            background: var(--card-bg-dark);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border-dark);
+        }
+        .chip {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 120px;   
+            padding: 10px 16px;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            text-align: center;
+            white-space: nowrap; 
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        .sidebar-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .sidebar-link:hover {
+            background: var(--sidebar-hover-dark);
+            border-left: 3px solid #6366f1;
+            padding-left: calc(1rem - 3px);
+        }
+        .sidebar-link.active {
+            background: var(--sidebar-active-dark);
+            border-left: 3px solid #8b5cf6;
+            padding-left: calc(1rem - 3px);
+        }
+        .glowing-title {
+            text-shadow: var(--glowing-title-dark);
+        }
+        .text-gray-400 { color: var(--placeholder-color-dark); }
+        .text-gray-300 { color: #A0A0A0; }
+        .text-gray-200 { color: #E0E0E0; }
+        .placeholder-gray-400::placeholder { color: var(--placeholder-color-dark); }
+        input, textarea, select {
+            background: var(--input-bg-dark);
+            border: 1px solid var(--input-border-dark);
+            color: var(--text-color-dark);
+        }
+        input::placeholder, textarea::placeholder {
+            color: var(--placeholder-color-dark);
+        }
+
+        /* Light Mode overrides */
+        [data-theme="light"] {
+            background: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+        [data-theme="light"] .glassmorphism {
+            background: var(--card-bg-light);
+            border: 1px solid var(--card-border-light);
+        }
+        [data-theme="light"] .chip {
+            background: var(--chip-bg-light);
+            border: 1px solid var(--chip-border-light);
+            color: var(--text-color-light);
+        }
+        [data-theme="light"] .chip.selected {
+            color: #fff;
+        }
+        [data-theme="light"] .sidebar-link:hover {
+            background: var(--sidebar-hover-light);
+            border-left: 3px solid #4c51bf;
+            padding-left: calc(1rem - 3px);
+        }
+        [data-theme="light"] .sidebar-link.active {
+            background: var(--sidebar-active-light);
+            border-left: 3px solid #4c51bf;
+            padding-left: calc(1rem - 3px);
+        }
+        [data-theme="light"] .glowing-title {
+            text-shadow: var(--glowing-title-light);
+        }
+        [data-theme="light"] .text-gray-400 { color: #4B5563; }
+        [data-theme="light"] .text-gray-300 { color: #6B7280; }
+        [data-theme="light"] .text-gray-200 { color: #9CA3AF; }
+        [data-theme="light"] .placeholder-gray-400::placeholder { color: var(--placeholder-color-light); }
+        [data-theme="light"] input, [data-theme="light"] textarea, [data-theme="light"] select {
+            background: var(--input-bg-light);
+            border: 1px solid var(--input-border-light);
+            color: var(--text-color-light);
+        }
+        [data-theme="light"] input::placeholder, [data-theme="light"] textarea::placeholder {
+            color: var(--placeholder-color-light);
+        }
+        [data-theme="light"] .dashboard-glassmorphism {
+            background-color: #ffffff;
+            border-color: #E5E7EB;
+        }
+
+        .aspire-color { color: #38bdf8; }
+        .next-color { color: #c084fc; }
+        .gen-color { color: #4ade80; }
+        
+        .neon-hover {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(to right, #5457ec, #8b5cf6);
+        }
+        .neon-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(84, 86, 228, 0.6);
+        }
+        .neon-hover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .neon-hover:hover::before {
+            left: 100%;
+        }
+        .gradient-border {
+            background: linear-gradient(135deg, #511569, #1e1786);
+            padding: 1px;
+            border-radius: 1rem;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #0f12b9, #6a2ff3, #f15368);
+            background-size: 200% 100%;
+            animation: progress-animation 2s ease infinite;
+        }
+        @keyframes progress-animation {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        .chip.selected {
+            background: linear-gradient(135deg, #4548f3, #723bf0);
+            border-color: transparent;
+            color: #fff;
+        }
+        .dashboard-glassmorphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .percentage-loop {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: conic-gradient(from 0deg, #6a2ff3, #f15368, #0f12b9, #6a2ff3);
+            transition: all 0.5s ease;
+        }
+        .percentage-loop::before {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: #1e293b;
+            border-radius: 50%;
+        }
+        .percentage-loop-text {
+            position: relative;
+            z-index: 10;
+            color: #E0E0E0;
+            font-weight: bold;
+        }
+
+        .dots-loader {
+            display: inline-block;
+        }
+
+        .dots-loader span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: #a855f7; /* Purple color */
+            border-radius: 50%;
+            animation: dotsBounce 1.4s infinite ease-in-out both;
+        }
+
+        .dots-loader span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        .dots-loader span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes dotsBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div id="app" class="min-h-screen">
+    </div>
+
+    <script>
+        // State management
+        let currentPage = 'home';
+        let currentAuthTab = 'signin';
+        let currentRegStep = 0;
+        let userData = {
+            name: '',
+            email: '',
+            password: '',
+            age: '',
+            gender: '',
+            education: '',
+            boardScores: '',
+            grades: '',
+            examResults: '',
+            interests: []
+        };
+        let isLoggedIn = false;
+        let testData = null;
+        let lastTestScore = null;
+        let theme = localStorage.getItem('theme') || 'dark';
+
+        // API endpoints
+        const API_BASE = 'http://localhost:8000'; 
+        
+        // Main header template for all pages
+        const mainHeader = () => `
+            <header class="w-full flex justify-between items-center py-4 px-6 fixed top-0 left-0 z-50">
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-3xl font-extrabold">
+                        <span class="flex items-center">
+                            <img src="/static/logo.jpg" alt="AspireNextGen Logo" class="w-14 h-14 object-contain mb-2 rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/64x64/1e293b/a855f7?text=AN';">
+                            <span class="aspire-color">Aspire</span><span class="next-color">Next</span><span class="gen-color">Gen</span>
+                        </span>
+                    </h1>
+                </div>
+                <button onclick="toggleTheme()" class="p-2 rounded-full glassmorphism hover:scale-110 transform transition-transform">
+                    <span data-lucide="${theme === 'dark' ? 'sun' : 'moon'}" class="w-6 h-6 text-purple-400"></span>
+                </button>
+            </header>
+        `;
+
+        // Page templates
+        const homePage = () => `
+            ${mainHeader()}
+            <div class="min-h-screen flex items-center justify-center p-4 pt-20">
+                <div class="w-full max-w-4xl text-center">
+                    <h1 class="text-5xl md:text-6xl font-extrabold mb-4 glowing-title leading-tight">
+                        <span class="aspire-color">Map Your Future</span> with AI-powered Career Guidance
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+                        Personalized career paths, skill gap analysis, and interactive roadmaps to help you achieve your professional goals.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-16">
+                        <button onclick="switchAuthTab('signup'); navigateTo('auth');" class="neon-hover py-3 px-8 text-white font-semibold rounded-lg shadow-lg">
+                            Get Started for free
+                        </button>
+                        <button onclick="switchAuthTab('signin'); navigateTo('auth');" class="py-3 px-8 text-purple-500 font-semibold rounded-lg shadow-lg border border-gray-600 transition-colors hover:bg-white/10">
+                            Log In
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                        <!-- Feature Card 1 -->
+                        <div class="glassmorphism rounded-xl p-6 transition-transform duration-300 hover:scale-105">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full mb-4 bg-blue-500/20 text-blue-400">
+                                <i data-lucide="compass" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Personalized Paths</h3>
+                            <p class="text-sm text-gray-400">
+                                Discover career paths tailored to your unique skills, interests, and academic background.
+                            </p>
+                        </div>
+                        <!-- Feature Card 2 -->
+                        <div class="glassmorphism rounded-xl p-6 transition-transform duration-300 hover:scale-105">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full mb-4 bg-purple-500/20 text-purple-400">
+                                <i data-lucide="zap" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Skill Gap Analysis</h3>
+                            <p class="text-sm text-gray-400">
+                                Get a clear view of your current skill set and identify what you need to learn to succeed.
+                            </p>
+                        </div>
+                        <!-- Feature Card 3 -->
+                        <div class="glassmorphism rounded-xl p-6 transition-transform duration-300 hover:scale-105">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full mb-4 bg-green-500/20 text-green-400">
+                                <i data-lucide="target" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Interactive Roadmaps</h3>
+                            <p class="text-sm text-gray-400">
+                                Follow a structured, step-by-step plan with recommended courses and tests to reach your goals.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const authPage = () => `
+            ${mainHeader()}
+            <div class="min-h-screen flex items-center justify-center p-4 pt-20">
+                <div class="gradient-border">
+                    <div class="glassmorphism rounded-2xl p-8 max-w-md w-full">
+                        <div class="flex flex-col items-center justify-center mb-6">
+                             <img src="/static/logo.jpg" alt="AspireNextGen Logo" class="w-16 h-16 object-contain mb-2 rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/64x64/1e293b/a855f7?text=ANG';">
+                             <h2 class="text-2xl font-bold glowing-title">
+                                <span class="aspire-color">Aspire</span><span class="next-color">Next</span><span class="gen-color">Gen</span>
+                            </h2>
+                        </div>
+                        <div class="flex justify-center mb-6">
+                            <div class="flex glassmorphism p-1 rounded-lg border-none">
+                                <button onclick="switchAuthTab('signin')" class="px-6 py-2 rounded-md transition-all ${currentAuthTab === 'signin' ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'text-gray-400'}">
+                                    Sign In
+                                </button>
+                                <button onclick="switchAuthTab('signup')" class="px-6 py-2 rounded-md transition-all ${currentAuthTab === 'signup' ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'text-gray-400'}">
+                                    Sign Up
+                                </button>
+                            </div>
+                        </div>
+                        
+                        ${currentAuthTab === 'signin' ? `
+                            <form onsubmit="handleSignIn(event)" class="space-y-4">
+                                <div class="relative">
+                                    <i data-lucide="mail" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                                    <input type="email" placeholder="Email" required class="w-full pl-10 pr-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                                    <input type="password" placeholder="Password" required class="w-full pl-10 pr-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                </div>
+                                <button type="submit" class="neon-hover w-full py-3 text-white font-semibold rounded-lg">
+                                    Sign In
+                                </button>
+                                <p class="text-center text-gray-400 text-sm">
+                                    Don't have an account? <a href="#" onclick="switchAuthTab('signup')" class="text-blue-400 hover:text-blue-300">Sign Up</a>
+                                </p>
+                            </form>
+                        ` : `
+                            <form onsubmit="handleSignUp(event)" class="space-y-4">
+                                <div class="relative">
+                                    <i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                                    <input type="text" id="signupName" placeholder="Full Name" required class="w-full pl-10 pr-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="mail" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                                    <input type="email" id="signupEmail" placeholder="Email" required class="w-full pl-10 pr-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                                    <input type="password" id="signupPassword" placeholder="Password" required class="w-full pl-10 pr-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="lock-keyhole" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required class="w-full pl-10 pr-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                </div>
+                                <button type="submit" class="neon-hover w-full py-3 text-white font-semibold rounded-lg">
+                                    Sign Up
+                                </button>
+                                <p class="text-center text-gray-400 text-sm">
+                                    Already have an account? <a href="#" onclick="switchAuthTab('signin')" class="text-blue-400 hover:text-blue-300">Sign In</a>
+                                </p>
+                            </form>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const registerPage = () => {
+            const steps = [
+                {
+                    title: 'Personal Information',
+                    icon: 'user',
+                    fields: `
+                        <div class="grid grid-rows-1 gap-4 grid-flow-col auto-cols-max">
+                            <input type="number" id="age" placeholder="Age" required class="w-[12rem] px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                            <select id="gender" required class="w-[12rem] px-4 py-3 rounded-lg text-gray-400 focus:outline-none focus:border-blue-400">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <select id="education" required class="w-[12rem] px-4 py-3 rounded-lg text-gray-400 focus:outline-none focus:border-blue-400">
+                                <option value="">Education Level</option>
+                                <option value="high-school">High School</option>
+                                <option value="undergraduate">Undergraduate</option>
+                                <option value="graduate">Graduate</option>
+                                <option value="postgraduate">Post-Graduate</option>
+                            </select>
+                        </div>
+                    `
+                },
+                {
+                    title: 'Academic Details',
+                    icon: 'graduation-cap',
+                    fields: `
+                        <div class="grid grid-rows-1 gap-4 grid-flow-col auto-cols-max">
+                            <input type="text" id="boardScores" placeholder="Board Scores (%)" class="w-[12rem] px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                            <input type="text" id="grades" placeholder="Current Grade/CGPA" class="w-[12rem] px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                            <input type="text" id="examResults" placeholder="Exam Results (if any)" class="w-[12rem] px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                        </div>
+                    `
+                },
+                {
+                    title: 'Areas of Interest',
+                    icon: 'sparkles',
+                    fields: `
+                        <div class="grid grid-rows-2 gap-4 grid-flow-col auto-cols-max">
+                            ${['Data Science', 'AI/ML', 'Web Development', 'Mobile Dev', 'Cloud Computing', 'Cybersecurity', 'UI/UX Design', 'DevOps']
+                                .map(interest => `
+                                    <button type="button"
+                                        onclick="toggleInterest('${interest}')"
+                                        class="chip min-w-[120px] px-4 py-2 rounded-full text-sm text-center 
+                                            ${userData.interests.includes(interest) ? 'selected' : ''}"
+                                        data-interest="${interest}">
+                                        ${interest}
+                                    </button>
+                                `).join('')}
+                        </div>
+                    `
+                }
+
+            ];
+
+            const currentStepData = steps[currentRegStep];
+            const progress = ((currentRegStep + 1) / steps.length) * 100;
+            const isLastStep = currentRegStep === steps.length - 1;
+
+            return `
+                ${mainHeader()}
+                <div class="min-h-screen flex items-center justify-center p-4 pt-20">
+                    <div class="gradient-border">
+                        <div class="glassmorphism rounded-2xl p-8 max-w-2xl w-full">
+                            <div class="flex flex-col items-center justify-center mb-6">
+                                <img src="/static/logo.jpg" alt="AspireNextGen Logo" class="w-16 h-16 object-contain mb-2 rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/64x64/1e293b/a855f7?text=ANG';">
+                                <h2 class="text-2xl font-bold glowing-title">
+                                    <span class="aspire-color">Aspire</span><span class="next-color">Next</span><span class="gen-color">Gen</span>
+                                </h2>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-6 text-center">Complete Your Profile</h2>
+                            
+                            <div class="mb-8">
+                                <div class="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
+                                    <div class="h-2.5 rounded-full progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                                <div class="text-center mt-2 text-sm text-gray-400">Step ${currentRegStep + 1} of ${steps.length}</div>
+                            </div>
+
+                            <form onsubmit="handleRegistration(event)" class="space-y-6">
+                                <div class="space-y-4">
+                                    <h3 class="text-xl font-semibold text-blue-400 flex items-center">
+                                        <i data-lucide="${currentStepData.icon}" class="w-5 h-5 mr-2"></i>
+                                        ${currentStepData.title}
+                                    </h3>
+                                    <div class="h-px bg-gradient-to-r from-blue-500 to-transparent"></div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        ${currentStepData.fields}
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between mt-8">
+                                    <button type="button" onclick="handleBackStep()" class="py-3 px-6 rounded-lg text-sm font-medium ${currentRegStep === 0 ? 'invisible' : ''} text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                                        Back
+                                    </button>
+                                    <button type="button" onclick="handleNextStep()" class="py-3 px-6 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                        ${isLastStep ? 'Complete Registration' : 'Next'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const dashboardPage = () => {
+            const toTitleCase = (str) => {
+                if (!str) return 'Student';
+                return str.replace(/\w\S*/g, (txt) => {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                });
+            };
+            
+            const formattedName = toTitleCase(userData.name);
+
+            const skills = ['Python Programming', 'Data Analysis', 'Machine Learning Basics'];
+            const tasks = [
+                { task: 'Complete Python Module', due: '2 days', status: 'In Progress' },
+                { task: 'Submit ML Project', due: '5 days', status: 'Not Started' },
+                { task: 'Practice Interview Questions', due: '1 week', status: 'Scheduled' }
+            ];
+
+            const skillsHtml = skills.map(skill => {
+                const percentage = Math.floor(60 + Math.random() * 30);
+                return `
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">${skill}</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+                                <div class="progress-bar h-full rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-400">${percentage}%</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const tasksHtml = tasks.map(item => `
+                <a href="#" onclick="navigateTo('comingSoon')" class="p-4 rounded-lg dashboard-glassmorphism block">
+                    <p class="font-medium">${item.task}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-gray-400 text-sm">Due: ${item.due}</span>
+                        <span class="px-2 py-1 text-xs rounded-full ${
+                            item.status === 'In Progress' ? 'bg-yellow-500/20 text-yellow-500' :
+                            item.status === 'Not Started' ? 'bg-red-500/20 text-red-500' :
+                            'bg-blue-500/20 text-blue-500'
+                        }">${item.status}</span>
+                    </div>
+                </a>
+            `).join('');
+
+            return `
+            <div class="flex h-screen">
+                <div class="w-64 glassmorphism border-r border-black/10">
+                    <div class="p-6">
+                        <div class="flex flex-col items-center mb-8">
+                            <img src="/static/logo.jpg" alt="AspireNextGen Logo" class="w-16 h-16 object-contain mb-2 rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/64x64/1e293b/a855f7?text=AN';">
+                            <h2 class="text-2xl font-bold glowing-title">
+                                <span class="aspire-color">Aspire</span><span class="next-color">Next</span><span class="gen-color">Gen</span>
+                            </h2>
+                        </div>
+
+                        <nav class="space-y-2">
+                            <a href="#" onclick="navigateTo('dashboard')" class="sidebar-link ${currentPage === 'dashboard' ? 'active' : ''} flex items-center space-x-3 p-3 rounded-lg">
+                                <i data-lucide="home" class="w-5 h-5"></i>
+                                <span>Home</span>
+                            </a>
+                            <a href="#" onclick="navigateTo('comingSoon')" class="sidebar-link ${currentPage === 'courses' ? 'active' : ''} flex items-center space-x-3 p-3 rounded-lg">
+                                <i data-lucide="book-open" class="w-5 h-5"></i>
+                                <span>Courses</span>
+                            </a>
+                            <a href="#" onclick="navigateTo('recommendations')" class="sidebar-link ${currentPage === 'recommendations' ? 'active' : ''} flex items-center space-x-3 p-3 rounded-lg">
+                                <i data-lucide="target" class="w-5 h-5"></i>
+                                <span>Recommendations</span>
+                            </a>
+                            <a href="#" onclick="navigateTo('test')" class="sidebar-link ${currentPage === 'test' ? 'active' : ''} flex items-center space-x-3 p-3 rounded-lg">
+                                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                                <span>Take a Test</span>
+                            </a>
+                            <a href="#" onclick="navigateTo('comingSoon')" class="sidebar-link ${currentPage === 'settings' ? 'active' : ''} flex items-center space-x-3 p-3 rounded-lg">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>Settings</span>
+                            </a>
+                        </nav>
+
+                        <button onclick="handleLogout()" class="mt-8 w-full flex items-center justify-center space-x-2 text-red-500 hover:text-red-400 p-3">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-auto">
+                    <div class="p-6">
+                        <!-- Dashboard Header -->
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="text-left">
+                                <h1 class="text-4xl sm:text-5xl font-extrabold glowing-title">Hello, ${formattedName}!</h1>
+                                <p class="text-gray-400 mt-2">Welcome back. Let's make today productive.</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <!-- Theme Toggle Button -->
+                                <button onclick="toggleTheme()" class="glassmorphism p-3 rounded-full border border-white/20 transition-colors duration-300 hover:scale-105">
+                                    <i id="theme-icon" data-lucide="${theme === 'dark' ? 'sun' : 'moon'}" class="w-6 h-6 text-purple-400"></i>
+                                </button>
+                                <div class="glassmorphism p-3 rounded-full border border-white/20">
+                                    <i data-lucide="user" class="w-6 h-6 text-purple-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <!-- Quick Stats Cards -->
+                            <div class="dashboard-glassmorphism rounded-xl p-6 flex items-center space-x-4 transition-transform duration-300 hover:scale-[1.02]">
+                                <div class="p-3 rounded-full bg-blue-500/20 text-blue-500">
+                                    <i data-lucide="award" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Goals Completed</p>
+                                    <h3 class="text-2xl font-bold mt-1">12</h3>
+                                </div>
+                            </div>
+                            <div class="dashboard-glassmorphism rounded-xl p-6 flex items-center space-x-4 transition-transform duration-300 hover:scale-[1.02]">
+                                <div class="p-3 rounded-full bg-green-500/20 text-green-400">
+                                    <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Recommendations</p>
+                                    <h3 class="text-2xl font-bold mt-1">3 New</h3>
+                                </div>
+                            </div>
+                            <div class="dashboard-glassmorphism rounded-xl p-6 flex items-center space-x-4 transition-transform duration-300 hover:scale-[1.02]">
+                                <div class="p-3 rounded-full bg-yellow-500/20 text-yellow-400">
+                                    <i data-lucide="trending-up" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Skills in Progress</p>
+                                    <h3 class="text-2xl font-bold mt-1">75%</h3>
+                                </div>
+                            </div>
+                            <div class="dashboard-glassmorphism rounded-xl p-6 flex items-center space-x-4 transition-transform duration-300 hover:scale-[1.02]">
+                                <div class="p-3 rounded-full bg-red-500/20 text-red-500">
+                                    <i data-lucide="check-circle" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Total Tasks</p>
+                                    <h3 class="text-2xl font-bold mt-1">32</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Two Column Layout -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Left Column (Learning Progress & Recent Activity) -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <div class="gradient-border">
+                                    <div class="dashboard-glassmorphism rounded-xl p-6">
+                                        <h2 class="text-xl font-semibold mb-4 flex items-center text-purple-400">
+                                            <i data-lucide="bar-chart-2" class="w-5 h-5 mr-2"></i>
+                                            Learning Progress
+                                        </h2>
+                                        <div class="space-y-4">
+                                            ${skillsHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="gradient-border">
+                                    <div class="dashboard-glassmorphism rounded-xl p-6">
+                                        <h2 class="text-xl font-semibold mb-4 flex items-center text-green-400">
+                                        <i data-lucide="activity" class="w-5 h-5 mr-2"></i>
+                                        Your Skills Overview
+                                        </h2>
+                                        <div class="w-[28rem] h-[28rem] mx-auto">
+                                            <canvas id="skillRadarChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                                <div class="gradient-border">
+                                    <div class="dashboard-glassmorphism rounded-xl p-6">
+                                        <h2 class="text-xl font-semibold mb-4 flex items-center text-yellow-400">
+                                            <i data-lucide="list" class="w-5 h-5 mr-2"></i>
+                                            Upcoming Tasks & Deadlines
+                                        </h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            ${tasksHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column (Quick Actions & Recommended Courses) -->
+                            <div class="lg:col-span-1 space-y-6">
+                                <div class="gradient-border">
+                                    <div class="dashboard-glassmorphism rounded-xl p-6">
+                                        <h2 class="text-xl font-semibold mb-4 flex items-center text-blue-400">
+                                            <i data-lucide="zap" class="w-5 h-5 mr-2"></i>
+                                            Quick Actions
+                                        </h2>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <a href="#" onclick="navigateTo('test')" class="flex flex-col items-center justify-center p-4 rounded-xl glassmorphism hover:scale-[1.02] transition-transform duration-200">
+                                                <i data-lucide="pencil-ruler" class="w-8 h-8 text-[color:var(--quick-action-icon-color)]"></i>
+                                                <span class="mt-2 text-sm">Take a Test</span>
+                                            </a>
+                                            <a href="#" onclick="navigateTo('recommendations')" class="flex flex-col items-center justify-center p-4 rounded-xl glassmorphism hover:scale-[1.02] transition-transform duration-200">
+                                                <i data-lucide="target" class="w-8 h-8 text-[color:var(--quick-action-icon-color)]"></i>
+                                                <span class="mt-2 text-sm">Get AI Recs</span>
+                                            </a>
+                                            <a href="#" onclick="navigateTo('comingSoon')" class="flex flex-col items-center justify-center p-4 rounded-xl glassmorphism hover:scale-[1.02] transition-transform duration-200">
+                                                <i data-lucide="book-open" class="w-8 h-8 text-[color:var(--quick-action-icon-color)]"></i>
+                                                <span class="mt-2 text-sm">Browse Courses</span>
+                                            </a>
+                                            <a href="#" onclick="navigateTo('comingSoon')" class="flex flex-col items-center justify-center p-4 rounded-xl glassmorphism hover:scale-[1.02] transition-transform duration-200">
+                                                <i data-lucide="user" class="w-8 h-8 text-[color:var(--quick-action-icon-color)]"></i>
+                                                <span class="mt-2 text-sm">Update Profile</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="gradient-border">
+                                    <div class="dashboard-glassmorphism rounded-xl p-6">
+                                        <h2 class="text-xl font-semibold mb-4 flex items-center text-purple-400">
+                                            <i data-lucide="compass" class="w-5 h-5 mr-2"></i>
+                                            Recommended Courses
+                                        </h2>
+                                        <div class="space-y-4">
+                                            <div class="p-3 dashboard-glassmorphism rounded-lg">
+                                                <p class="font-medium">Complete Python Bootcamp</p>
+                                                <p class="text-gray-400 text-sm mt-1">Instructor: John Doe</p>
+                                            </div>
+                                            <div class="p-3 dashboard-glassmorphism rounded-lg">
+                                                <p class="font-medium">AI for Beginners</p>
+                                                <p class="text-gray-400 text-sm mt-1">Instructor: Jane Smith</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        };
+        
+        const comingSoonPage = () => `
+            ${mainHeader()}
+            <div class="min-h-screen flex items-center justify-center p-4 pt-20">
+                <div class="gradient-border">
+                    <div class="glassmorphism rounded-2xl p-12 max-w-lg w-full text-center">
+                        <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                            <i data-lucide="package" class="w-full h-full text-gray-400"></i>
+                        </div>
+                        <h1 class="text-4xl font-bold mb-4">Coming Soon!</h1>
+                        <p class="text-gray-400 mb-8">This feature is currently under development. Please check back later for updates!</p>
+                        <button onclick="navigateTo('dashboard')" class="neon-hover w-full py-4 px-8 text-white font-semibold rounded-lg shadow-lg">
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const recommendationsPage = () => `
+            ${mainHeader()}
+            <div class="min-h-screen flex items-center justify-center p-6 pt-20">
+                <div class="gradient-border w-full max-w-7xl">
+                    <div class="glassmorphism rounded-2xl p-8 flex flex-col lg:flex-row gap-8">
+                        <!-- Left Column (Form) -->
+                        <div class="lg:w-1/3">
+                            <div class="flex flex-col items-center justify-center mb-6 lg:hidden">
+                                <img src="/static/logo.jpg" alt="AspireNextGen Logo" class="w-16 h-16 object-contain mb-2 rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/64x64/1e293b/a855f7?text=AN';">
+                                <h2 class="text-2xl font-bold glowing-title">
+                                    <span class="aspire-color">Aspire</span><span class="next-color">Next</span><span class="gen-color">Gen</span>
+                                </h2>
+                            </div>
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-3xl font-bold">Get AI Recommendations</h2>
+                            </div>
+                            <form onsubmit="handleRecommendation(event)" class="space-y-4">
+                                <input type="text" id="userSkillsInput" placeholder="Enter your current skills (e.g., Python, SQL, C++)" 
+                                    class="w-full px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                
+                                <input type="text" id="interestInput" placeholder="Enter a domain or area of interest (e.g., Data Science, Cybersecurity)" 
+                                    class="w-full px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                                    
+                                <textarea id="userThoughtsInput" rows="4" placeholder="Share your thoughts or specific questions for the AI here..."
+                                    class="w-full px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400"></textarea>
+                                
+                                <button type="submit" 
+                                    class="neon-hover w-full py-3 text-white font-semibold rounded-lg">
+                                    Get Recommendation
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Right Column (AI Response) -->
+                        <div class="lg:w-2/3 flex flex-col">
+                            <div class="flex justify-between items-center mb-6">
+                                <button onclick="navigateTo('dashboard')" class="text-blue-400 hover:text-blue-300 flex items-center space-x-1">
+                                    <span>Back to Dashboard</span>
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div id="chatBox"
+                                class="flex-1 w-full overflow-y-auto px-4 py-3 glassmorphism rounded-lg text-sm text-justify">
+                                AI career guidance will appear here...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const testPage = () => `
+            ${mainHeader()}
+            <div class="min-h-screen flex items-center justify-center p-6 pt-20">
+                <div class="gradient-border w-full max-w-3xl">
+                    <div class="glassmorphism rounded-2xl p-8">
+                        <div class="flex flex-col items-center justify-center mb-6">
+                            <img src="/static/logo.jpg" alt="AspireNextGen Logo" class="w-16 h-16 object-contain mb-2 rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/64x64/1e293b/a855f7?text=AN';">
+                            <h2 class="text-2xl font-bold glowing-title">
+                                <span class="aspire-color">Aspire</span><span class="next-color">Next</span><span class="gen-color">Gen</span>
+                            </h2>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-3xl font-bold">Take a Test</h2>
+                            <button onclick="navigateTo('dashboard')" class="text-blue-400 hover:text-blue-300 flex items-center space-x-1">
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                                <span>Back to Dashboard</span>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <select id="testCategory" class="px-4 py-3 rounded-lg text-gray-400 focus:outline-none focus:border-blue-400">
+                                    <option value="" disabled selected>Select Test Category</option>
+                                    <option value="coding_proficiency">Coding Proficiency</option>
+                                    <option value="logic">Logic</option>
+                                    <option value="mathematics">Mathematics</option>
+                                    <option value="analytical">Analytical</option>
+                                </select>
+                                <button id="generateTestBtn" onclick="handleGenerateTest()" class="neon-hover px-6 py-3 text-white font-semibold rounded-lg">
+                                    Generate Test
+                                </button>
+                            </div>
+                            
+                            <div id="testQuestions" class="space-y-6">
+                                <p class="text-gray-400 text-center">Please select a category and click "Generate Test" to begin.</p>
+                            </div>
+                            
+                            <div id="testResults" class="hidden mt-6 p-4 dashboard-glassmorphism rounded-lg">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Function to convert markdown-style bolding to HTML
+        function convertMarkdownToHtml(text) {
+            let htmlText = text.replace(/\n\n/g, '</p><p>');
+            htmlText = `<p>${htmlText.replace(/\n/g, '<br>')}</p>`;
+            htmlText = htmlText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            return htmlText;
+        }
+
+        async function handleRecommendation(event) {
+            event.preventDefault();
+
+            const userSkills = document.getElementById("userSkillsInput").value.toLowerCase();
+            const interest = document.getElementById("interestInput").value.toLowerCase();
+            const userThoughts = document.getElementById("userThoughtsInput").value.toLowerCase();
+            const chatBox = document.getElementById("chatBox");
+
+            // Show thinking animation
+            chatBox.innerHTML = `
+                <div class="dots-loader">
+                    <p>Thinking&nbsp;&nbsp;<span></span><span></span><span></span></p>
+                </div>
+            `;
+
+            try {
+                // match backend schema naming
+                const payload = {};
+                if (interest) payload.interest_domain = interest;
+                if (userSkills) payload.skills = userSkills.split(',').map(s => s.trim());
+                if (userThoughts) payload.free_text = userThoughts;
+
+                //console.log(JSON.stringify(payload));
+                const response = await fetch(`${API_BASE}/recommend`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const formattedText = convertMarkdownToHtml(data.summary);
+                chatBox.innerHTML = formattedText || "No summary found.";
+
+            } catch (error) {
+                chatBox.innerHTML = `Error fetching recommendation. Details: ${error.message}`;
+                console.error(error);
+            }
+        }
+
+
+        async function handleGenerateTest() {
+            const userId = userData.email || 'guest_user';
+            const category = document.getElementById('testCategory').value;
+            const testQuestionsContainer = document.getElementById('testQuestions');
+            
+            if (!category) {
+                alert("Please select a test category before generating the test.");
+                return;
+            }
+
+            testQuestionsContainer.innerHTML = `<p class="text-gray-400 text-center">Generating test...</p>`;
+            
+            try {
+                const response = await fetch(`${API_BASE}/tests/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, category: category })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                testData = await response.json();
+                renderTestQuestions(testData.test);
+                document.getElementById('generateTestBtn').innerText = 'Take Another Test';
+                lastTestScore = null;
+                document.getElementById('testResults').classList.add('hidden');
+
+            } catch (error) {
+                testQuestionsContainer.innerHTML = `<p class="text-red-500 text-center">Error generating test. Please try again.</p>`;
+                console.error('Error generating test:', error);
+            }
+        }
+
+        function renderTestQuestions(questions) {
+            const testQuestionsContainer = document.getElementById('testQuestions');
+            let html = '';
+            
+            for (const category in questions) {
+                html += `
+                    <h3 class="text-xl font-semibold mt-4">${category.replace(/_/g, ' ').toUpperCase()}</h3>
+                    <form id="testForm" onsubmit="handleSubmitTest(event)">
+                `;
+                questions[category].forEach((q, index) => {
+                    html += `
+                        <div class="p-4 dashboard-glassmorphism rounded-lg mb-4">
+                            <p class="font-medium mb-2">${index + 1}. ${q.question}</p>
+                    `;
+                    if (q.options) {
+                        q.options.forEach(option => {
+                            html += `
+                                <label class="block text-gray-300 text-sm mb-1">
+                                    <input type="radio" name="${category}-${q.id}" value="${option}" class="mr-2">
+                                    ${option}
+                                </label>
+                            `;
+                        });
+                    } else {
+                        html += `
+                            <textarea name="${category}-${q.id}" rows="4" placeholder="Write your answer here..."
+                                class="w-full mt-2 px-4 py-3 rounded-lg placeholder-gray-400 focus:outline-none focus:border-blue-400"></textarea>
+                        `;
+                    }
+                    html += `</div>`;
+                });
+                html += `</form>`;
+            }
+            
+            html += `<button type="submit" form="testForm" class="neon-hover w-full py-3 text-white font-semibold rounded-lg mt-4">
+                        Submit Test
+                     </button>`;
+            
+            testQuestionsContainer.innerHTML = html;
+        }
+
+        async function handleSubmitTest(event) {
+            event.preventDefault();
+            const form = document.getElementById('testForm');
+            const userAnswers = {};
+            const formData = new FormData(form);
+
+            for (const category in testData.test) {
+                userAnswers[category] = {};
+                for (const question of testData.test[category]) {
+                    const formName = `${category}-${question.id}`;
+                    const value = formData.get(formName);
+                    
+                    if (value !== null) {
+                        if (typeof question.answer === 'number') {
+                            userAnswers[category][question.id] = parseFloat(value);
+                        } else {
+                            userAnswers[category][question.id] = value;
+                        }
+                    }
+                }
+            }
+
+            const testQuestionsContainer = document.getElementById('testQuestions');
+            const testResultsContainer = document.getElementById('testResults');
+            testQuestionsContainer.innerHTML = `<p class="text-gray-400 text-center">Submitting answers and evaluating...</p>`;
+            
+            try {
+                const response = await fetch(`${API_BASE}/tests/evaluate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: testData.user_id,
+                        test_data: testData, 
+                        user_answers: userAnswers
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                lastTestScore = result.score;
+                
+                let html = `<div class="flex items-center justify-center space-x-6">
+                                <h4 class="text-xl font-semibold">Test Results</h4>
+                            </div>`;
+                
+                for (const cat in result.score) {
+                    const percentage = Math.round((result.score[cat] / result.max_score[cat]) * 100);
+                    const gradient = `conic-gradient(from 0deg, #6a2ff3, #f15368, #0f12b9, #6a2ff3)`;
+                    html += `
+                        <div class="flex items-center justify-between mt-4">
+                            <p class="text-gray-300">${cat.replace(/_/g, ' ').toUpperCase()}:</p>
+                            <div class="flex items-center space-x-4">
+                                <div class="percentage-loop" style="background: ${gradient}">
+                                    <span class="percentage-loop-text">${percentage}%</span>
+                                </div>
+                                <p class="text-gray-300">${result.score[cat]} / ${result.max_score[cat]}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                testQuestionsContainer.innerHTML = '';
+                testResultsContainer.innerHTML = html;
+                testResultsContainer.classList.remove('hidden');
+                
+            } catch (error) {
+                testQuestionsContainer.innerHTML = `<p class="text-red-500 text-center">Error evaluating test. Please try again.</p>`;
+                console.error('Error evaluating test:', error);
+            }
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('userData');
+            userData = {
+                name: '',
+                email: '',
+                password: '',
+                age: '',
+                gender: '',
+                education: '',
+                boardScores: '',
+                grades: '',
+                examResults: '',
+                interests: []
+            };
+            navigateTo('home');
+        }
+        
+        // State Management and Navigation Logic
+        function navigateTo(page) {
+            currentPage = page;
+            render();
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.querySelector(`.sidebar-link[onclick="navigateTo('${page}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+        
+        function switchAuthTab(tab) {
+            currentAuthTab = tab;
+            render();
+        }
+
+        function toggleInterest(interest) {
+            const index = userData.interests.indexOf(interest);
+            if (index > -1) {
+                userData.interests.splice(index, 1);
+            } else {
+                userData.interests.push(interest);
+            }
+            
+            const button = document.querySelector(`[data-interest="${interest}"]`);
+            if (button) {
+                button.classList.toggle('selected');
+            }
+        }
+
+        async function handleSignIn(event) {
+            event.preventDefault();
+            const form = event.target;
+            const email = form[0].value;
+            const password = form[1].value;
+
+            const savedUser = JSON.parse(sessionStorage.getItem("registeredUser"));
+
+            if (!savedUser) {
+                alert("No user found. Please sign up first.");
+                return;
+            }
+
+            if (savedUser.email === email && savedUser.password === password) {
+                userData = savedUser;
+                isLoggedIn = true;
+
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userData', JSON.stringify(userData));
+                navigateTo('dashboard');
+            } else {
+                alert("Invalid email or password. Try again.");
+            }
+        }
+
+
+        async function handleSignUp(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match. Please try again.");
+                return;
+            }
+
+            // Save partial user details until registration is complete
+            userData.name = name;
+            userData.email = email;
+            userData.password = password;
+
+            currentRegStep = 0;
+            navigateTo('register'); // go through registration steps
+        }
+
+
+        function handleNextStep() {
+            const form = document.getElementById('app').querySelector('form');
+
+            // Step 0: Personal Information
+            if (currentRegStep === 0) {
+                const age = form.querySelector('#age').value.trim();
+                const gender = form.querySelector('#gender').value.trim();
+                const education = form.querySelector('#education').value.trim();
+
+                if (!age || !gender || !education) {
+                    alert("Please fill out Age, Gender, and Education before continuing.");
+                    return;
+                }
+
+                userData.age = age;
+                userData.gender = gender;
+                userData.education = education;
+            } 
+
+            // Step 1: Academic Details
+            else if (currentRegStep === 1) {
+                const boardScores = form.querySelector('#boardScores').value.trim();
+                const grades = form.querySelector('#grades').value.trim();
+                const examResults = form.querySelector('#examResults').value.trim();
+
+                if (!boardScores || !grades) {
+                    alert("Please provide Board Scores and Current Grade/CGPA before continuing.");
+                    return;
+                }
+
+                userData.boardScores = boardScores;
+                userData.grades = grades;
+                userData.examResults = examResults;
+            }
+
+            // Step 2: Interest Areas (final step before saving)
+            else if (currentRegStep === 2) {
+                if (!userData.interests || userData.interests.length === 0) {
+                    alert("Please pick at least one interest area before completing registration.");
+                    return;
+                }
+
+                // Save registered user credentials after registration is completed
+                sessionStorage.setItem("registeredUser", JSON.stringify(userData));
+                alert("Registration completed! Please sign in.");
+                isLoggedIn = false;
+
+                // Redirect to signin page
+                switchAuthTab('signin');
+                navigateTo('auth');
+                return; // stop here
+            }
+
+            // Move to next step if not finished
+            if (currentRegStep < 2) {
+                currentRegStep++;
+                render();
+            }
+        }
+
+
+
+        function handleBackStep() {
+            if (currentRegStep > 0) {
+                currentRegStep--;
+                render();
+            }
+        }
+        
+        function handleRegistration(event) {
+             event.preventDefault();
+             // This function is now handled by handleNextStep on the last step
+        }
+        
+        function toggleTheme() {
+            theme = theme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                themeIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+                lucide.createIcons();
+            }
+        }
+
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            theme = savedTheme;
+        }
+
+        function renderRadarChart() {
+            const ctx = document.getElementById('skillRadarChart');
+            if (!ctx) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+
+            const textColor      = isDark ? "#ffffff" : "#1f2937";
+            const gridColor      = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)";
+            const angleLineColor = isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.25)";
+
+            const backgroundColor = "rgba(139, 92, 246, 0.35)"; // light purple fill
+            const borderColor     = "#8b5cf6"; // purple border
+            const pointColor      = "#a78bfa"; // lighter purple points
+
+
+            if (Chart.getChart("skillRadarChart")) {
+                Chart.getChart("skillRadarChart").destroy();
+            }
+
+            const labels = ['Python', 'Data Analysis', 'ML', 'SQL', 'Web Dev', 'AI/ML'];
+            const finalData = [80, 65, 70, 55, 60, 75];
+
+            // start completely empty (all at 0)
+            const startingData = finalData.map(() => 0);
+
+            const chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Skill Levels',
+                        data: startingData,
+                        backgroundColor,
+                        borderColor,
+                        pointBackgroundColor: pointColor,
+                        pointBorderColor: "#fff",
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false, // disable built-in animation
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor,
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            angleLines: { color: angleLineColor },
+                            grid: { color: gridColor },
+                            pointLabels: {
+                                color: textColor,
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                color: textColor,
+                                backdropColor: "transparent",
+                                stepSize: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ✅ custom grow-from-center animation
+            let progress = 0;
+            const steps = 0;   // ~1 second at 60fps
+
+            function animate() {
+                progress++;
+                const factor = progress / steps;
+                chart.data.datasets[0].data = finalData.map(v => v * factor);
+                chart.update();
+                if (progress < steps) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // lock final values
+                    chart.data.datasets[0].data = finalData;
+                    chart.update();
+                }
+            }
+
+            animate(); // start animation immediately
+        }
+
+
+
+
+
+        // Render function
+        function render() {
+            const app = document.getElementById('app');
+            
+            switch(currentPage) {
+                case 'home':
+                    app.innerHTML = homePage();
+                    break;
+                case 'auth':
+                    app.innerHTML = authPage();
+                    break;
+                case 'register':
+                    app.innerHTML = registerPage();
+                    break;
+                case 'dashboard':
+                    app.innerHTML = dashboardPage();
+                    break;
+                case 'recommendations':
+                    app.innerHTML = recommendationsPage();
+                    break;
+                case 'test':
+                    app.innerHTML = testPage();
+                    break;
+                case 'comingSoon':
+                    app.innerHTML = comingSoonPage();
+                    break;
+                default:
+                    app.innerHTML = homePage();
+            }
+            
+            if (currentPage === 'dashboard') {
+                renderRadarChart();
+            }
+
+            // Re-initialize icons after render
+            lucide.createIcons();
+        }
+
+        // Check for login status on page load
+        function checkLoginStatus() {
+            applySavedTheme();
+            const storedIsLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const storedUserData = sessionStorage.getItem('userData');
+            if (storedIsLoggedIn === 'true' && storedUserData) {
+                isLoggedIn = true;
+                userData = JSON.parse(storedUserData);
+                currentPage = 'dashboard';
+            }
+            render();
+        }
+
+        // Initial render
+        window.onload = checkLoginStatus;
+      </script>
+    </body>
+</html>
