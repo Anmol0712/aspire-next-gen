@@ -48,3 +48,6 @@ npm install                      # if using Node/React
 
 # Run the project
 python app.py
+
+# To run the FastAPI server
+uvicorn app.main:app --reload
